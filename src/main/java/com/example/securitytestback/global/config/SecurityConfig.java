@@ -5,6 +5,7 @@ import com.example.securitytestback.global.filter.LoginFilter;
 import com.example.securitytestback.global.util.JwtUtil;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,13 +31,6 @@ public class SecurityConfig {
   private final AuthenticationConfiguration authenticationConfiguration;
 
   /**
-   * 허용된 CORS Origin 목록
-   */
-  private static final String[] ALLOWED_ORIGINS = {
-      "http://localhost:5173"
-  };
-
-  /**
    * Security Filter Chain 설정
    */
   @Bean
@@ -57,7 +51,7 @@ public class SecurityConfig {
         .formLogin(AbstractHttpConfigurer::disable)
         // 경로별 인가 작업
         .authorizeHttpRequests((authorize) -> authorize
-            .requestMatchers("/api/user/register", "/api/auth/login").permitAll()
+            .requestMatchers("/api/user/register", "/api/auth/login", "/docs/**", "/v3/**").permitAll()
             .anyRequest().authenticated()
         )
         // 세션 설정 STATELESS
@@ -92,12 +86,15 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOriginPatterns(Arrays.asList(ALLOWED_ORIGINS));
-    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-    configuration.setAllowCredentials(true);
-    configuration.setAllowedHeaders(Collections.singletonList("*"));
-    configuration.setMaxAge(3600L);
 
+    configuration.setAllowedOriginPatterns(List.of("http://localhost:5173")); // 허용할 오리진
+
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")); // 허용할 HTTP 메서드
+    configuration.setAllowCredentials(true); // 인증 정보 포함 여부
+    configuration.setAllowedHeaders(Collections.singletonList("*")); // 허용할 헤더
+    configuration.setMaxAge(3600L); // Preflight 캐싱 시간
+
+    // 모든 경로에 대해 CORS 설정 적용
     UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
     urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", configuration);
     return urlBasedCorsConfigurationSource;

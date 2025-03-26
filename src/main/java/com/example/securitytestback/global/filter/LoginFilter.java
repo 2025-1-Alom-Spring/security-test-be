@@ -43,7 +43,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
       // 스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야 함
       UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
 
-      // token에 담은 검증을 위한 AuthenticationManager로 전달
+      // token 검증을 위한 AuthenticationManager로 전달
       return authenticationManager.authenticate(authToken);
     } catch (IOException e) {
       log.error("JSON 파싱 중 오류 발생");
