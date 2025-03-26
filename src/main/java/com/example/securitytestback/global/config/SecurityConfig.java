@@ -38,7 +38,7 @@ public class SecurityConfig {
 
     // 로그인 경로를 설정하기 위해 LoginFilter 생성
     LoginFilter loginFilter = new LoginFilter(jwtUtil, authenticationManager(authenticationConfiguration));
-    loginFilter.setFilterProcessesUrl("/api/auth/login");
+    loginFilter.setFilterProcessesUrl(); // TODO: 로그인 경로 커스텀 "/api/auth/login"
 
     return http
         // cors 설정
@@ -51,7 +51,7 @@ public class SecurityConfig {
         .formLogin(AbstractHttpConfigurer::disable)
         // 경로별 인가 작업
         .authorizeHttpRequests((authorize) -> authorize
-            .requestMatchers("/api/user/register", "/api/auth/login", "/docs/**", "/v3/**").permitAll()
+            .requestMatchers("/docs/**", "/v3/**").permitAll() // TODO: 인증 생략 경로 설정  회원가입: "/api/auth/login", 로그인: "/api/auth/login"
             .anyRequest().authenticated()
         )
         // 세션 설정 STATELESS
@@ -87,7 +87,7 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOriginPatterns(List.of("http://localhost:5173")); // 허용할 오리진
+    configuration.setAllowedOriginPatterns(List.of()); // 허용할 오리진 TODO: CORS 경로 설정 "http://localhost:5173"
 
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")); // 허용할 HTTP 메서드
     configuration.setAllowCredentials(true); // 인증 정보 포함 여부
